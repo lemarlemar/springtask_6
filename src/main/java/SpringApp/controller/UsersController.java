@@ -1,7 +1,6 @@
 package SpringApp.controller;
 
 
-
 import SpringApp.model.User;
 import SpringApp.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +8,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping("/users")
 public class UsersController {
 
-    private UsersService usersService;
+    private final UsersService usersService;
 
     @Autowired
     public UsersController(UsersService usersService) {
@@ -26,10 +27,9 @@ public class UsersController {
         return "users";
     }
 
-    @PostMapping("/add")
-    public String addUser(User user, Model model) {
-        model.addAttribute("user", new User());
-        return "redirect:/users";
+    @GetMapping("/add")
+    public String addUser() {
+        return "add";
     }
 
     @GetMapping("/delete/{id}")
@@ -40,15 +40,29 @@ public class UsersController {
 
     @GetMapping("edit/{id}")
     public String editUser(@PathVariable("id") int id, Model model) {
-        model.addAttribute("user", usersService.getUser(id));
-        model.addAttribute("getUsers", usersService.getAllUsers());
-        return "users";
+        model.addAttribute("user", usersService.getUserById(id));
+        return "edit_user";
     }
 
-    @GetMapping("/{id}")
-    public String getUser(@PathVariable("id") int id, Model model) {
-        model.addAttribute("user", usersService.getUser(id));
-        return "userdata";
+    @PostMapping("edit/{id}")
+    public String updateUser(@PathVariable("id") int id, @ModelAttribute User updatedUser, String name,Model model) {
+        usersService.getUserById(id);
+        updatedUser.setName(name);
+        usersService.editUser(id, updatedUser);
+        model.addAttribute("user", usersService.getUserById(id));
+        return "redirect:/users";
+    }
+
+    @PostMapping(value = "/add")
+    public String createUser(@ModelAttribute User user) {
+        usersService.addUser(user);
+        return "redirect:/users";
+    }
+
+    @GetMapping("userinfo/{id}")
+    public String userInfo(@PathVariable("id") int id, Model model) {
+        model.addAttribute("user", usersService.getUserById(id));
+        return "userinfo";
     }
 }
 

@@ -1,9 +1,10 @@
 package SpringApp.model;
 
-import jakarta.persistence.*;
+
+import javax.persistence.*;
 
 @Entity
-@Table
+@Table(name = "users")
 public class User {
 
     @Id

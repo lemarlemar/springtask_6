@@ -1,10 +1,10 @@
 package SpringApp.service;
 
+import SpringApp.UserDao.UserDao;
 import SpringApp.model.User;
-import SpringApp.repositories.UsersRepo;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,37 +13,34 @@ import java.util.Optional;
 @Transactional
 public class UsersService {
 
-    private UsersRepo usersRepo;
+    private UserDao userDao;
 
     @Autowired
-    public UsersService(UsersRepo usersRepo) {
-        this.usersRepo = usersRepo;
+    public UsersService(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    public User getUserById(int id) {
+        return userDao.getUserById(id);
     }
 
     @Transactional
     public void addUser(User user) {
-        usersRepo.save(user);
+        userDao.createUser(user);
     }
 
     @Transactional
-    public void updateUser(int id, User updatedUser) {
+    public void editUser(int id, User updatedUser) {
         updatedUser.setId(id);
-        usersRepo.save(updatedUser);
+        userDao.updateUser(updatedUser);
     }
 
     @Transactional
     public void deleteUser(int id) {
-        usersRepo.deleteById(id);
+        userDao.deleteUserById(id);
     }
-
-
-    public User getUser(int id) {
-        Optional<User> foundUser = usersRepo.findById(id);
-        return foundUser.orElse(null);
-    }
-
 
     public List<User> getAllUsers() {
-        return usersRepo.findAll();
+        return userDao.getAllUsers();
     }
 }
